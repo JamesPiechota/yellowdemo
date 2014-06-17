@@ -1,6 +1,5 @@
 import os
 from os.path import abspath, dirname, basename, join
-import djcelery
 from datetime import timedelta
 
 SECRET_KEY = os.environ['SECRET_KEY']
