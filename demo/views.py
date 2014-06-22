@@ -16,7 +16,7 @@ def create(request):
     if request.method == 'POST': 
         form = CreateInvoiceForm(request.POST) 
         if form.is_valid():
-            url = 'http://127.0.0.1:8000/api/invoice/'
+            url = 'http://yolanda-perkins.herokuapp.com/api/invoice/'
             payload= { 'base_price' : str(form.cleaned_data['amount'].quantize(Decimal("0.01"))), 
                        'base_ccy' : form.cleaned_data['currency'] }
             body = json.dumps(payload)
