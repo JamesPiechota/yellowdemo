@@ -10,7 +10,7 @@ This is a simple Django server with two pages:
 
 *views.py* contains sample code to
 
-1. Create an invoice by issueing an authenticated request to the Yellow servers
+1. Create an invoice by issuing an authenticated request to the Yellow servers
 2. Monitor a callback url ("IPN" Instant Payment Notification) for changes to the invoice status
 
 This demo server just prints to the terminal when the invoice status changes - a real shopping cart integration would likely update an order management system and redirect customers to an order confirmation page.
