@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from django.shortcuts import render_to_response
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponse
+from django.views.decorators.csrf import csrf_exempt
 from forms import CreateInvoiceForm
 import requests
 import json
@@ -16,10 +17,12 @@ def create(request):
     if request.method == 'POST': 
         form = CreateInvoiceForm(request.POST) 
         if form.is_valid():
-            url = 'http://yolanda-perkins.herokuapp.com/api/invoice/'
+            url = "http://{yellow_server}/api/invoice/".format(yellow_server=os.environ["YELLOW_SERVER"])
             payload= { 'base_price' : str(form.cleaned_data['amount'].quantize(Decimal("0.01"))), 
-                       'base_ccy' : form.cleaned_data['currency'] }
+                       'base_ccy' : form.cleaned_data['currency'],
+                       'callback' : "{host}/ipn/".format(host=os.environ["ROOT_URL"])}
             body = json.dumps(payload)
+            print body
             credentials = _credentials(url, body)
             headers = {'content-type': 'application/json',
                        'API-Key': credentials[0],
@@ -40,6 +43,12 @@ def create(request):
         'form': CreateInvoiceForm(),
         'error': error
     })
+    
+@csrf_exempt
+def ipn(request):
+    print "IPN"
+    print request.POST
+    return HttpResponse()
     
 def _credentials(url, body):
     api_key = os.environ.get("YELLOW_KEY", "")
