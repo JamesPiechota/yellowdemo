@@ -3,5 +3,6 @@ import demo.views
 
 urlpatterns = patterns('',
     url(r'^$', demo.views.create),
-    url(r'^ipn/$', demo.views.ipn)
+    url(r'^ipn/$', demo.views.ipn),
+    url(r'^success/$', demo.views.success)
 )

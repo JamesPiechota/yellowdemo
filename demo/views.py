@@ -34,6 +34,9 @@ def create(request):
             payload= { 'base_price' : str(form.cleaned_data['amount'].quantize(Decimal("0.01"))), 
                        'base_ccy' : form.cleaned_data['currency'],
                        'callback' : "{host}/ipn/".format(host=os.environ["ROOT_URL"])}
+            if form.cleaned_data['redirect']:
+                payload['redirect'] = "{host}/success".format(host=os.environ["ROOT_URL"])
+                
             body = json.dumps(payload)
 
             # Calculate the authentication credentials to be included in the
@@ -64,6 +67,8 @@ def create(request):
         'error': error
     })
     
+def success(request):
+    return render(request, 'demo/success.html', {}) 
     
 def _credentials(url, body):
     ''' To secure communication between merchant server and Yellow server we
