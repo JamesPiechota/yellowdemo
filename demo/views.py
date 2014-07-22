@@ -28,7 +28,8 @@ def create(request):
         form = CreateInvoiceForm(request.POST) 
         if form.is_valid():
             # Yellow API url to create an invoice
-            url = "http://{yellow_server}/api/invoice/".format(yellow_server=os.environ["YELLOW_SERVER"])
+            yellow_server = "http://{yellow_server}".format(yellow_server=os.environ["YELLOW_SERVER"])
+            url = "{yellow_server}/api/invoice/".format(yellow_server=yellow_server)
             # POST /api/invoice/ expects a base price, currency, and optional
             # callback. 
             payload= { 'base_price' : str(form.cleaned_data['amount'].quantize(Decimal("0.01"))), 
@@ -57,7 +58,8 @@ def create(request):
                 # Order Management System and attach the returned invoice
                 # id.
                 data = r.json()
-                context = { 'url' : data['url']  }
+                context = { 'url' : data['url'],
+                            'yellow_server' : yellow_server  }
                 return render_to_response('demo/invoice.html', context)
             else:
                 error = r.text
@@ -81,10 +83,10 @@ def _credentials(url, body):
                  dashboard
         API-Nonce: an ever-increasing number that is different for each request
                    (e.g., current UNIX time in milliseconds)
-        API-Signature: an HMAC hash signed with your API secret and converted to
-                       hexadecimal. The message to be hahed and signed is the
-                       concatenation of the nonce, fully-qualified request URL,
-                       and any request parameters.
+        API-Sign: an HMAC hash signed with your API secret and converted to
+                  hexadecimal. The message to be hahed and signed is the
+                  concatenation of the nonce, fully-qualified request URL,
+                  and any request parameters.
                        
         This allows us to authenticate the request as coming from you,
         prevents anyone else from modifying or replaying your request, and
