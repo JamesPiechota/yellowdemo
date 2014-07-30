@@ -28,7 +28,7 @@ def create(request):
         form = CreateInvoiceForm(request.POST) 
         if form.is_valid():
             # Yellow API url to create an invoice
-            yellow_server = "http://{yellow_server}".format(yellow_server=os.environ["YELLOW_SERVER"])
+            yellow_server = "https://{yellow_server}".format(yellow_server=os.environ["YELLOW_SERVER"])
             url = "{yellow_server}/api/invoice/".format(yellow_server=yellow_server)
             # POST /api/invoice/ expects a base price, currency, and optional
             # callback. 
