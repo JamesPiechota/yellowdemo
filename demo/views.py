@@ -28,6 +28,9 @@ def create(request):
         form = CreateInvoiceForm(request.POST) 
         if form.is_valid():
             # Yellow API url to create an invoice
+            # Note: all Yellow URLs must be 'https' - since Yellow will redirect 
+            # http to https, using an http:// URL may cause authentication
+            # to fail
             yellow_server = "https://{yellow_server}".format(yellow_server=os.environ["YELLOW_SERVER"])
             url = "{yellow_server}/api/invoice/".format(yellow_server=yellow_server)
             # POST /api/invoice/ expects a base price, currency, and optional
@@ -39,6 +42,9 @@ def create(request):
                 payload['redirect'] = "{host}/success".format(host=os.environ["ROOT_URL"])
                 
             body = json.dumps(payload)
+            
+            print "URL", url
+            print "BODY", body
 
             # Calculate the authentication credentials to be included in the
             # request header. See _credentials for more information
