@@ -43,9 +43,6 @@ def create(request):
                 
             body = json.dumps(payload)
             
-            print "URL", url
-            print "BODY", body
-
             # Calculate the authentication credentials to be included in the
             # request header. See _credentials for more information
             credentials = _credentials(url, body)
