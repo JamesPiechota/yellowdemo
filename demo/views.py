@@ -35,6 +35,7 @@ def create(request):
             url = "{yellow_server}/api/invoice/".format(yellow_server=yellow_server)
             # POST /api/invoice/ expects a base price, currency, and optional
             # callback. 
+            # ROOT_URL should refer to a server you control
             payload= { 'base_price' : str(form.cleaned_data['amount'].quantize(Decimal("0.01"))), 
                        'base_ccy' : form.cleaned_data['currency'],
                        'callback' : "{host}/ipn/".format(host=os.environ["ROOT_URL"])}
