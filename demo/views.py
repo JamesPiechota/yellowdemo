@@ -131,7 +131,7 @@ def _credentials(url, body):
 @csrf_exempt # No CSRF token is needed or expected
 def ipn(request):
     ''' Entry point for the IPN callback. An example approach would be to:
-        1. Grab the invoice id and status from the POST request
+        1. Grab the invoice id and status from the POST payload
         2. Query the order management system for an order matching the invoice
         3a. If the status is 'unconfirmed' flag the order as
             'pending confirmation' and redirect the customer to an order
@@ -139,8 +139,9 @@ def ipn(request):
         3b. If the status is 'paid' flag th order as 'complete' and ship the
             the product
     '''
-    invoice = request.POST.get("id", None)
-    status = request.POST.get("status", None)
+    payload = json.loads(request.body)
+    invoice = payload.get("id", None)
+    status = payload.get("status", None)
     if (None == invoice or None == status):
         # This should never happen (we'll always include an invoice id and
         # status), but if it does responding with a 400 will alert us to a
