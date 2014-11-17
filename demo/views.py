@@ -148,6 +148,16 @@ def ipn(request):
     # requests to Yellow API. Therefore, the same logic can be used to verify
     # the signature.
     signature = request.META['HTTP_API_SIGN']
+
+    # Nonces, as is described above, is useful against replay attacks. To 
+    # implement nonce checks, the merchant application has to store the last
+    # nonce received from Yellow and make sure that this nonce is a fresh one
+    # with a higher value than the old one.
+    #
+    # Because this is just a demo application with no database, we're not
+    # implementing the nonce checking. Furthermore, the current set of 
+    # functionality that is enabled by IPN requests make replay attacks
+    # of little value anyway.
     nonce = request.META['HTTP_API_NONCE']
     body = request.body
 
