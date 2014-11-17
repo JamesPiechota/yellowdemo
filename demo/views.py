@@ -160,7 +160,7 @@ def ipn(request):
     if test_signature != signature:
         # If signatures are not the same, that means it could be a malicious request:
         # reject it.
-        return HttpResponse(status=400)
+        return HttpResponse(status=403)
         
 
     payload = json.loads(request.body)
