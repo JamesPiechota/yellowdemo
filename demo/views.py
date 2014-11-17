@@ -16,7 +16,7 @@ from decimal import Decimal
 # with Yellow as part of their shopping cart. There are three functions:
 # 'create': create an invoice
 # 'ipn': respond to Instant Payment Notification requests
-# '_credentials': sign a request so it will be accepted by Yellow
+# 'get_signature': sign a request so it will be accepted by Yellow
 
 def create(request):
     ''' Fabricated example that prompts a user for USD or AED price and creates
@@ -44,13 +44,24 @@ def create(request):
                 
             body = json.dumps(payload)
             
-            # Calculate the authentication credentials to be included in the
-            # request header. See _credentials for more information
-            credentials = _credentials(url, body)
+            # Calculate the authentication signature to be included in the
+            # request header. See get_signature for more information
+            
+            # Use the number of milliseconds since epoch (i.e.., UNIX time in
+            # milliseconds) as the nonce.
+            # A nonce prevents an attacker from replaying your request verbatim as
+            # we will reject any request that reuses an existing nonce. We will
+            # also reject any request that uses an old nonce, so nonce should always
+            # increase.
+            nonce = int(time.time() * 1000)
+
+            api_key = os.environ.get("YELLOW_KEY", "")
+
+            signature = get_signature(url, body, nonce)
             headers = {'content-type': 'application/json',
-                       'API-Key': credentials[0],
-                       'API-Nonce' : credentials[1],
-                       'API-Sign' : credentials[2]}
+                       'API-Key': api_key,
+                       'API-Nonce' : nonce,
+                       'API-Sign' : signature}
 
             # POST the request
             r = requests.post(url,
@@ -76,7 +87,7 @@ def create(request):
 def success(request):
     return render(request, 'demo/success.html', {}) 
     
-def _credentials(url, body):
+def get_signature(url, body, nonce):
     ''' To secure communication between merchant server and Yellow server we
         use a form of HMAC authentication.
         (http://en.wikipedia.org/wiki/Hash-based_message_authentication_code)
@@ -98,19 +109,10 @@ def _credentials(url, body):
         scenario where the SSL layer itself is compromised).
         '''
     
-    # Load your API key and secret from environment variables. For security
+    # Load your API secret from environment variables. For security
     # reasons we recommend # storing any sensitive credentials in environment
     # variables as opposed to hardcoding them directly in source code.
-    api_key = os.environ.get("YELLOW_KEY", "")
     api_secret = os.environ.get("YELLOW_SECRET", "")
-    
-    # Use the number of milliseconds since epoch (i.e.., UNIX time in
-    # milliseconds) as the nonce.
-    # A nonce prevents an attacker from replaying your request verbatim as
-    # we will reject any request that reuses an existing nonce. We will
-    # also reject any request that uses an old nonce, so nonce should always
-    # increase.
-    nonce = int(time.time() * 1000)
     
     # Concatenate the components of the request to be hashed. They should
     # always be concatenated in this order: Nonce, fully-qualified URL
@@ -125,7 +127,7 @@ def _credentials(url, body):
     # Convert he signature to hexadecimal
     signature = h.hexdigest()
     
-    return (api_key, nonce, signature)
+    return signature
 
 
 @csrf_exempt # No CSRF token is needed or expected
@@ -139,6 +141,28 @@ def ipn(request):
         3b. If the status is 'paid' flag th order as 'complete' and ship the
             the product
     '''
+
+    secret = os.environ.get("YELLOW_SECRET", "")
+
+    # Yellow signs its requests with same mechanism clients sign their
+    # requests to Yellow API. Therefore, the same logic can be used to verify
+    # the signature.
+    signature = request.META['HTTP_API_SIGN']
+    nonce = request.META['HTTP_API_NONCE']
+    body = request.body
+
+    # the URL in this case is the merchant IPN URL registered with
+    # Yellow when the invoice was created
+    url = "{host}/ipn/".format(host=os.environ["ROOT_URL"])
+
+    test_signature = get_signature(url, body, nonce)
+
+    if test_signature != signature:
+        # If signatures are not the same, that means it could be a malicious request:
+        # reject it.
+        return HttpResponse(status=400)
+        
+
     payload = json.loads(request.body)
     invoice = payload.get("id", None)
     status = payload.get("status", None)
@@ -150,7 +174,7 @@ def ipn(request):
     
     print "Querying Order Management System for order matching invoice id %s" % invoice
     
-    if 'unconfirmed' == status:
+    if 'authorizing' == status:
         print "Order is 'pending confirmation', redirecting customer to order complete page."
     elif 'paid' == status:
         print "Order is 'complete', shipping product to customer."
