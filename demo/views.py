@@ -32,7 +32,7 @@ def create(request):
             # http to https, using an http:// URL may cause authentication
             # to fail
             yellow_server = "https://{yellow_server}".format(yellow_server=os.environ["YELLOW_SERVER"])
-            url = "{yellow_server}/api/invoice/".format(yellow_server=yellow_server)
+            url = "{yellow_server}/v1/api/invoice/".format(yellow_server=yellow_server)
             # POST /api/invoice/ expects a base price, currency, and optional
             # callback. 
             # ROOT_URL should refer to a server you control
