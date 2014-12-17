@@ -66,7 +66,8 @@ def create(request):
             # POST the request
             r = requests.post(url,
                               data=body,
-                              headers=headers)
+                              headers=headers,
+                              verify=True)
             if 200 == r.status_code:
                 # At this point the demo just displays the embedded invoice
                 # widget. A non-demo site might also open a order in an
