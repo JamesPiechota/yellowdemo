@@ -8,7 +8,7 @@
       function invoiceListener(event) {
         // For additional security, confirm the message originated from the
         // embedded invoice
-        if (!/\.yellowpay\.co$/.test(event.origin)) {
+        if (!/\.yellowpay\.co$/.test(event.origin) && event.origin != "{{ yellow_server}}") {
           alert("Received message from unexpected domain: " + event.origin);
           return;
         }
