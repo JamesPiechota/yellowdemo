@@ -32,15 +32,15 @@ def create(request):
             # http to https, using an http:// URL may cause authentication
             # to fail
             yellow_server = "https://{yellow_server}".format(yellow_server=os.environ["YELLOW_SERVER"])
-            url = "{yellow_server}/v1/invoice/".format(yellow_server=yellow_server)
+            url = "{yellow_server}/api/invoice/".format(yellow_server=yellow_server)
             # POST /api/invoice/ expects a base price, currency, and optional
             # callback. 
-            # ROOT_URL should refer to a server you control
+            # DEMO_HOST should refer to a server you control
             payload= { 'base_price' : str(form.cleaned_data['amount'].quantize(Decimal("0.01"))), 
                        'base_ccy' : form.cleaned_data['currency'],
-                       'callback' : "{host}/ipn/".format(host=os.environ["ROOT_URL"])}
+                       'callback' : "{host}/ipn/".format(host=os.environ["DEMO_HOST"])}
             if form.cleaned_data['redirect']:
-                payload['redirect'] = "{host}/success".format(host=os.environ["ROOT_URL"])
+                payload['redirect'] = "{host}/success".format(host=os.environ["DEMO_HOST"])
                 
             body = json.dumps(payload)
             
@@ -55,7 +55,7 @@ def create(request):
             # increase.
             nonce = int(time.time() * 1000)
 
-            api_key = os.environ.get("YELLOW_KEY", "")
+            api_key = os.environ.get("DEMO_KEY", "")
 
             signature = get_signature(url, body, nonce)
             headers = {'content-type': 'application/json',
@@ -113,7 +113,7 @@ def get_signature(url, body, nonce):
     # Load your API secret from environment variables. For security
     # reasons we recommend # storing any sensitive credentials in environment
     # variables as opposed to hardcoding them directly in source code.
-    api_secret = os.environ.get("YELLOW_SECRET", "")
+    api_secret = os.environ.get("DEMO_SECRET", "")
     
     # Concatenate the components of the request to be hashed. They should
     # always be concatenated in this order: Nonce, fully-qualified URL
@@ -143,7 +143,7 @@ def ipn(request):
             the product
     '''
 
-    secret = os.environ.get("YELLOW_SECRET", "")
+    secret = os.environ.get("DEMO_SECRET", "")
 
     # Yellow signs its requests with same mechanism clients sign their
     # requests to Yellow API. Therefore, the same logic can be used to verify
@@ -164,7 +164,7 @@ def ipn(request):
 
     # the URL in this case is the merchant IPN URL registered with
     # Yellow when the invoice was created
-    url = "{host}/ipn/".format(host=os.environ["ROOT_URL"])
+    url = "{host}/ipn/".format(host=os.environ["DEMO_HOST"])
 
     test_signature = get_signature(url, body, nonce)
 
