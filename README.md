@@ -37,10 +37,10 @@ source env.sh
 # Set this to the YellowServer supplied to you by the Yellow team
 export YELLOW_SERVER=yolanda-perkins.heroku.com
 # Set this to the ngrok URL from above
-export ROOT_URL=https://dummy.ngrok.com
+export DEMO_HOST=https://dummy.ngrok.com
 # Set this to the yellow API Key and Secret given to you by the Yellow team
-export YELLOW_KEY=XXX
-export YELLOW_SECRET=XXX
+export DEMO_KEY=XXX
+export DEMO_SECRET=XXX
 ```
 * Run the server!
 ```
