@@ -1,17 +1,13 @@
 Yellow Demo
 ==========
 
-Demo code for creating and monitoring Yellow invoices.
+Demo code for creating and monitoring Yellow invoices using our Python SDK.
 
 This is a simple Django server with two pages:
 
 1. A page to create an invoice in USD or AED
 2. A page to display the embedded invoice widget
 
-*views.py* contains sample code to
-
-1. Create an invoice by issuing an authenticated request to the Yellow servers
-2. Monitor a callback url ("IPN" Instant Payment Notification) for changes to the invoice status
 
 This demo server just prints to the terminal when the invoice status changes - a real shopping cart integration would likely update an order management system and redirect customers to an order confirmation page.
 
@@ -28,19 +24,9 @@ Setup Instructions
 ```
 pip install -r requirements.txt
 ```
-* Source the basic environment setup script:
+* open the `env.sh` file and add your `API_KEY` and `API_SECRET`. Then source the file with the following command:
 ```
 source env.sh
-```
-* Set up the following environment variables:
-```
-# Set this to the YellowServer supplied to you by the Yellow team
-export YELLOW_SERVER=yolanda-perkins.heroku.com
-# Set this to the ngrok URL from above
-export DEMO_HOST=https://dummy.ngrok.com
-# Set this to the yellow API Key and Secret given to you by the Yellow team
-export DEMO_KEY=XXX
-export DEMO_SECRET=XXX
 ```
 * Run the server!
 ```

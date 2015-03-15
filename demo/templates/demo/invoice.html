@@ -9,7 +9,6 @@
         // For additional security, confirm the message originated from the
         // embedded invoice
         if (!/\.yellowpay\.co$/.test(event.origin) && event.origin != "{{ yellow_server}}") {
-          alert("Received message from unexpected domain: " + event.origin);
           return;
         }
         // Handle the invoice status update
@@ -21,7 +20,7 @@
       } else {
         attachEvent("onmessage", invoiceListener)
       }
-    </script> 
+    </script>
   </head>
   <body>
     <iframe src="{{ url }}" style="width:393px; height:255px; overflow:hidden; border:none; margin:auto; display:block;"  scrolling="no" allowtransparency="true" frameborder="0"></iframe>
