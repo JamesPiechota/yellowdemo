@@ -24,7 +24,7 @@ Setup Instructions
 ```
 pip install -r requirements.txt
 ```
-* open the `env.sh` file and add your `API_KEY` and `API_SECRET`. Then source the file with the following command:
+* open the `env.sh` file and add your `API_KEY`, `API_SECRET` and `DEMO_HOST`. Then source the file with the following command:
 ```
 source env.sh
 ```
