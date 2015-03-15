@@ -41,7 +41,7 @@ USE_L10N = True
 # If you set this to False, Django will not use timezone-aware datetimes.
 USE_TZ = True
 
-STATIC_URL = os.environ.get('STATIC_URL', '/static/') 
+STATIC_URL = os.environ.get('STATIC_URL', '/static/')
 ADMIN_MEDIA_PREFIX = STATIC_URL + 'admin/'
 STATIC_ROOT = 'staticfiles'
 
@@ -157,4 +157,3 @@ DATABASES = { 'default' : dj_database_url.config() }
 
 # Honor the 'X-Forwarded-Proto' header for request.is_secure()
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
-
