@@ -20,12 +20,13 @@ from decimal import Decimal
 # 'get_signature': sign a request so it will be accepted by Yellow
 
 def create(request):
-    ''' Fabricated example that prompts a user for USD or AED price and creates
-        the corresponding BTC invoice. A non-demo site would likely calculate
-        the USD/AED price based on the value of the current shopping cart.'''
+    ''' Fabricated example that prompts a user for a national currency base
+        price and creates the corresponding BTC invoice. A non-demo site would
+        likely calculate the base price based on the value of the current
+        shopping cart.'''
     error = None
     if request.method == 'POST':
-        # Load USD/AED price from the user-POSTed form
+        # Load base price from the user-POSTed form
         form = CreateInvoiceForm(request.POST)
         if form.is_valid():
 
@@ -35,9 +36,8 @@ def create(request):
             base_price = str(form.cleaned_data['amount'].quantize(Decimal("0.01")))
             callback = "{host}/ipn/".format(host=os.environ["DEMO_HOST"])
 
-            response = yellow.create_invoice(api_key, api_secret, base_ccy, base_price, callback)
-
-            if 200 == response.status_code:
+            try:
+                response = yellow.create_invoice(api_key, api_secret, base_ccy, base_price, callback)
                 # At this point the demo just displays the embedded invoice
                 # widget. A non-demo site might also open a order in an
                 # Order Management System and attach the returned invoice
@@ -46,8 +46,8 @@ def create(request):
                 context = { 'url' : data['url'],
                             'yellow_server' : "https://" + os.environ.get("YELLOW_SERVER", "api.yellowpay.co")  }
                 return render_to_response('demo/invoice.html', context)
-            else:
-                error = response.text
+            except yellow.YellowApiError as e:
+                error = e.message
 
     return render(request, 'demo/create.html', {
         'form': CreateInvoiceForm(),
