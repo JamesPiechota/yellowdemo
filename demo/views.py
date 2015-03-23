@@ -37,6 +37,7 @@ def create(request):
             callback = "{host}/ipn/".format(host=os.environ["DEMO_HOST"])
 
             try:
+                print base_price, base_ccy
                 response = yellow.create_invoice(api_key, api_secret, base_ccy, base_price, callback)
                 # At this point the demo just displays the embedded invoice
                 # widget. A non-demo site might also open a order in an
