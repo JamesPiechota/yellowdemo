@@ -8,7 +8,8 @@ SECRET_KEY = os.environ['SECRET_KEY']
 DEBUG = bool(os.environ.get('DEBUG', False))
 TEMPLATE_DEBUG = bool(os.environ.get('TEMPLATE_DEBUG', False))
 
-PROJECT_PATH = abspath(dirname(__file__))
+PROJECT_ROOT = dirname(__file__)
+PROJECT_PATH = abspath(PROJECT_ROOT)
 
 ADMINS = ()
 
