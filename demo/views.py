@@ -42,9 +42,11 @@ def create(request):
                 # widget. A non-demo site might also open a order in an
                 # Order Management System and attach the returned invoice
                 # id.
+                
+                fullscreen = "&full=1" if form.cleaned_data['fullscreen'] else "&full=0"           
                 data = response.json()
-                context = { 'url' : data['url'],
-                            'yellow_server' : "https://" + os.environ.get("YELLOW_SERVER", "api.yellowpay.co")  }
+                context = { 'url' : data['url'] + fullscreen,
+                            'yellow_server' : "https://" + os.environ.get("YELLOW_SERVER", "api.yellowpay.co")}
                 return render_to_response('demo/invoice.html', context)
             except yellow.YellowApiError as e:
                 error = e.message
