@@ -15,3 +15,7 @@ class CreateInvoiceForm(forms.Form):
                                           ('TND', 'TND'),
                                           ])
     amount = forms.DecimalField()
+    type = forms.ChoiceField(choices=[('embedded', 'Embedded Cart'),
+                                          ('fullscreen', 'Fullscreen Cart'),
+                                          ('link', 'Link'),
+                                          ])

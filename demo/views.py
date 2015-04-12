@@ -1,5 +1,4 @@
-from django.shortcuts import render
-from django.shortcuts import render_to_response
+from django.shortcuts import render, render_to_response, redirect
 from django.http import HttpResponseRedirect, HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from forms import CreateInvoiceForm
@@ -36,18 +35,37 @@ def create(request):
             base_price = str(form.cleaned_data['amount'].quantize(Decimal("0.01")))
             callback = "{host}/ipn/".format(host=os.environ["DEMO_HOST"])
 
+            # type can be either 'link' or 'cart'            
+            type = form.cleaned_data['type']
+            if type != 'link': type = 'cart'
+            
             try:
-                response = yellow.create_invoice(api_key, api_secret, base_ccy, base_price, callback)
-                # At this point the demo just displays the embedded invoice
+                response = yellow.create_invoice(api_key,
+                                                 api_secret,
+                                                 base_ccy=base_ccy,
+                                                 base_price=base_price,
+                                                 callback=callback,
+                                                 type = type)
+                # At this point the demo just displays the invoice
                 # widget. A non-demo site might also open a order in an
                 # Order Management System and attach the returned invoice
                 # id.
-                
-                fullscreen = "&full=1" if form.cleaned_data['fullscreen'] else "&full=0"           
                 data = response.json()
-                context = { 'url' : data['url'] + fullscreen,
-                            'yellow_server' : "https://" + os.environ.get("YELLOW_SERVER", "api.yellowpay.co")}
-                return render_to_response('demo/invoice.html', context)
+                url = data['url']
+                
+                if 'cart' == type:
+                    # 'cart' invoices are intended to be embedded in a
+                    # merchant cart. To simulate that we'll simply
+                    # display them embedded via iframe.
+                    if type == 'fullscreen':
+                        url += '&full=1'
+                    context = { 'url' : url,
+                                'yellow_server' : "https://" + os.environ.get("YELLOW_SERVER", "api.yellowpay.co")}
+                    return render_to_response('demo/invoice.html', context)
+                else:
+                    # 'link' invoices are intended to be clicked directly
+                    # by the customer, so we'll display via redirect
+                    return redirect(url) 
             except yellow.YellowApiError as e:
                 error = e.message
 
