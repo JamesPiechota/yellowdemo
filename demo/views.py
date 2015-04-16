@@ -37,6 +37,7 @@ def create(request):
 
             # type can be either 'link' or 'cart'            
             type = form.cleaned_data['type']
+            fullscreen = (type == 'fullscreen')
             if type != 'link': type = 'cart'
             
             try:
@@ -57,7 +58,7 @@ def create(request):
                     # 'cart' invoices are intended to be embedded in a
                     # merchant cart. To simulate that we'll simply
                     # display them embedded via iframe.
-                    if type == 'fullscreen':
+                    if fullscreen:
                         url += '&full=1'
                     context = { 'url' : url,
                                 'yellow_server' : "https://" + os.environ.get("YELLOW_SERVER", "api.yellowpay.co")}
