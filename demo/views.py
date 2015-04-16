@@ -58,10 +58,10 @@ def create(request):
                     # 'cart' invoices are intended to be embedded in a
                     # merchant cart. To simulate that we'll simply
                     # display them embedded via iframe.
-                    if fullscreen:
-                        url += '&full=1'
+                    url += "&full=%s" % (1 if fullscreen else 0)
                     context = { 'url' : url,
-                                'yellow_server' : "https://" + os.environ.get("YELLOW_SERVER", "api.yellowpay.co")}
+                                'yellow_server' : "https://" + os.environ.get("YELLOW_SERVER", "api.yellowpay.co"),
+                                'full' : fullscreen }
                     return render_to_response('demo/invoice.html', context)
                 else:
                     # 'link' invoices are intended to be clicked directly
