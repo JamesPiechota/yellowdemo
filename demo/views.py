@@ -41,7 +41,7 @@ def create(request):
             if type != 'link': type = 'cart'
             
             try:
-                response = yellow.create_invoice(api_key,
+                data = yellow.create_invoice(api_key,
                                                  api_secret,
                                                  base_ccy=base_ccy,
                                                  base_price=base_price,
@@ -51,7 +51,7 @@ def create(request):
                 # widget. A non-demo site might also open a order in an
                 # Order Management System and attach the returned invoice
                 # id.
-                data = response.json()
+                
                 url = data['url']
                 
                 if 'cart' == type:
@@ -93,8 +93,11 @@ def ipn(request):
 
     api_secret = os.environ["API_SECRET"]
     host_url = "{host}/ipn/".format(host=os.environ["DEMO_HOST"])
+    request_signature = request.META['HTTP_API_SIGN']
+    request_nonce = request.META['HTTP_API_NONCE']
+    request_body = request.body
 
-    verified = yellow.verify_ipn(api_secret, host_url, request)
+    verified = yellow.verify_ipn(api_secret, host_url, request_nonce, request_signature, request_body)
 
 
     if not verified:
