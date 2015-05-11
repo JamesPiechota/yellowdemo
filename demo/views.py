@@ -35,10 +35,10 @@ def create(request):
             base_price = str(form.cleaned_data['amount'].quantize(Decimal("0.01")))
             callback = "{host}/ipn/".format(host=os.environ["DEMO_HOST"])
 
-            # type can be either 'link' or 'cart'            
-            type = form.cleaned_data['type']
-            fullscreen = (type == 'fullscreen')
-            if type != 'link': type = 'cart'
+            # style can be either 'link' or 'cart'            
+            style = form.cleaned_data['style']
+            fullscreen = (style == 'fullscreen')
+            if style != 'link': style = 'cart'
             
             try:
                 data = yellow.create_invoice(api_key,
@@ -46,7 +46,7 @@ def create(request):
                                                  base_ccy=base_ccy,
                                                  base_price=base_price,
                                                  callback=callback,
-                                                 type = type)
+                                                 style = style)
                 # At this point the demo just displays the invoice
                 # widget. A non-demo site might also open a order in an
                 # Order Management System and attach the returned invoice
@@ -54,7 +54,7 @@ def create(request):
                 
                 url = data['url']
                 
-                if 'cart' == type:
+                if 'cart' == style:
                     # 'cart' invoices are intended to be embedded in a
                     # merchant cart. To simulate that we'll simply
                     # display them embedded via iframe.
